@@ -1,0 +1,62 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'local.ytk.app.ds'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+        content { includeGroup "com.github.SuperYoshi10000" }
+    }
+    maven {
+        url "https://libraries.minecraft.net"
+    }
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    implementation "it.unimi.dsi:fastutil:8.5.13"
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation "org.apache.commons:commons-collections4:4.4"
+    implementation 'tools.jackson.core:jackson-databind:3.2.0'
+    implementation "io.netty:netty-all:4.2.16.Final"
+    implementation 'com.mojang:brigadier:1.0.18'
+    implementation 'com.mojang:datafixerupper:1.0.21'
+    
+    implementation 'com.github.SuperYoshi10000:JavaUtils:0.1.1'
+    
+    compileOnly 'org.jetbrains:annotations:26.0.2'
+    
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+publishing {
+    publications {
+        dataSerializer(MavenPublication) {
+            from components.java
+        }
+    }
+    
+    repositories {
+        maven {
+//            name = 'dataSerializer'
+            url = layout.buildDirectory.dir("repo")
+        }
+    }
+}

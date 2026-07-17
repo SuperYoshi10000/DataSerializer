@@ -11,7 +11,7 @@ public interface TypedTag<V, T extends TypedTag<V, T>> extends Tag, DataValue<V>
     }
     
     @SuppressWarnings("unchecked")
-    default <@AutoGeneric S extends SequenceTag<V, T, S>> TagType<V, T, S> getType() {
+    default <@AutoGeneric O, S extends SequenceTag<V, T, O, S>> TagType<V, T, S> getType() {
         return TagType.of(this);
     }
     @Override

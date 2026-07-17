@@ -1,6 +1,8 @@
 package local.ytk.app.ds.data.tag;
 
-public abstract class NumericArrayTag<N extends Number, T extends NumericTag<N, T>, S extends NumericArrayTag<N, T, S>> extends AbstractArrayTag<N, T, S> {
+import java.lang.reflect.InvocationTargetException;
+
+public abstract class NumericArrayTag<N extends Number, T extends NumericTag<N, T>, O, S extends NumericArrayTag<N, T, O, S>> extends AbstractArrayTag<N, T, O, S> {
     public abstract Object toPrimitiveArray();
     
     @Override

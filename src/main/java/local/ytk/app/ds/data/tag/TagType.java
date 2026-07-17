@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 import static java.util.Map.entry;
 
-public class TagType<V, T extends Tag, A extends SequenceTag<V, T, A>> {
+public class TagType<V, T extends Tag, A extends SequenceTag<V, T, ?, A>> {
     static final BiMap<Byte, Class<? extends Tag>> BY_ID = HashBiMap.create(Map.ofEntries(
         entry((byte) 0x00, Tag.Null.class),
         entry((byte) 0x01, ByteTag.class),
@@ -158,7 +158,7 @@ public class TagType<V, T extends Tag, A extends SequenceTag<V, T, A>> {
     }
     
     @SuppressWarnings("unchecked")
-    public static <V, T extends Tag, S extends SequenceTag<V, T, S>> TagType<V, T, S> of(Tag tag) {
+    public static <V, T extends Tag, O, S extends SequenceTag<V, T, O, S>> TagType<V, T, S> of(Tag tag) {
         return (TagType<V, T, S>) fromId(tag.getId());
     }
     

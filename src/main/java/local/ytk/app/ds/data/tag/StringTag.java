@@ -5,6 +5,7 @@ import local.ytk.app.ds.val.DataValue;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static local.ytk.app.ds.data.save.Serializer.checkReadable;
 
@@ -106,5 +107,15 @@ public record StringTag(String value) implements ObjectTag<String, StringTag>, D
     @Override
     public String get() {
         return value;
+    }
+    
+    public CharTag toCharTag() {
+        return CharTag.of(value.charAt(0));
+    }
+    public CharTag toCharTag(int index) {
+        return CharTag.of(value.charAt(index));
+    }
+    public TypedListTag.Generic<CharTag> toCharTags() {
+        return value.chars().mapToObj(CharTag::of).collect(Collectors.toCollection(TypedListTag::generic));
     }
 }

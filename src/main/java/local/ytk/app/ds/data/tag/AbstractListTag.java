@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractListTag<T extends Tag, S extends AbstractListTag<T, S>> extends AbstractArrayTag<T, T, S> {
+public abstract class AbstractListTag<T extends Tag, S extends AbstractListTag<T, S>> extends AbstractArrayTag<T, T, S, S> implements SelfObjectTag<S> {
     public AbstractListTag() {}
     @SafeVarargs
     public AbstractListTag(T... tags) {
@@ -15,8 +15,9 @@ public abstract class AbstractListTag<T extends Tag, S extends AbstractListTag<T
         super(tags);
     }
     
+    
     @Override
-    public S objectValue() {
+    public S get() {
         return (S) this;
     }
     

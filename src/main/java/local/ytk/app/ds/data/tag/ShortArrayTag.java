@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ShortArrayTag extends NumericArrayTag<Short, ShortTag, ShortArrayTag> {
+public class ShortArrayTag extends NumericArrayTag<Short, ShortTag, short[], ShortArrayTag> {
     public static ShortArrayTag of(short... array) {
         ShortArrayTag tag = new ShortArrayTag();
         for (short s : array) tag.add(s);
@@ -28,7 +28,7 @@ public class ShortArrayTag extends NumericArrayTag<Short, ShortTag, ShortArrayTa
     }
     
     @Override
-    public short[] objectValue() {
+    public short[] get() {
         return toPrimitiveArray();
     }
     @Override

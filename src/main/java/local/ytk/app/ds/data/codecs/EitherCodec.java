@@ -1,7 +1,7 @@
 package local.ytk.app.ds.data.codecs;
 
+import com.mojang.datafixers.util.Either;
 import local.ytk.util.Result;
-import local.ytk.util.tuple.Either;
 
 public record EitherCodec<A, B>(Codec<A> aCodec, Codec<B> bCodec) implements Codec<Either<A, B>> {
     @Override

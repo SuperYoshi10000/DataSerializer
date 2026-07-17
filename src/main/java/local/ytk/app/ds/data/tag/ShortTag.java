@@ -77,4 +77,8 @@ public class ShortTag extends NumericTag<Short, ShortTag> implements ShortValue 
     public short getShort() {
         return value;
     }
+    
+    public CharTag toCharTag() {
+        return CharTag.of(value);
+    }
 }

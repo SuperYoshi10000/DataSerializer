@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
-public class LongArrayTag extends NumericArrayTag<Long, LongTag, LongArrayTag> {
+public class LongArrayTag extends NumericArrayTag<Long, LongTag, long[], LongArrayTag> {
     public static LongArrayTag of(long... array) {
         LongArrayTag tag = new LongArrayTag();
         for (long item : array) tag.add(item);
@@ -23,7 +23,7 @@ public class LongArrayTag extends NumericArrayTag<Long, LongTag, LongArrayTag> {
     }
     
     @Override
-    public long[] objectValue() {
+    public long[] get() {
         return toPrimitiveArray();
     }
     @Override

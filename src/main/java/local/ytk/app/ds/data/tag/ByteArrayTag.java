@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class ByteArrayTag extends NumericArrayTag<Byte, ByteTag, ByteArrayTag> {
+public class ByteArrayTag extends NumericArrayTag<Byte, ByteTag, byte[], ByteArrayTag> {
     public static ByteArrayTag of(byte... array) {
         ByteArrayTag tag = new ByteArrayTag();
         for (byte b : array) tag.add(b);
@@ -31,7 +31,7 @@ public class ByteArrayTag extends NumericArrayTag<Byte, ByteTag, ByteArrayTag> {
     }
     
     @Override
-    public byte[] objectValue() {
+    public byte[] get() {
         return toPrimitiveArray();
     }
     @Override

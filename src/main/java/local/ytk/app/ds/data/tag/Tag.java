@@ -164,7 +164,7 @@ public interface Tag extends KnownSizeSerializable, TagLike, HasOps<Tag, TagOps>
     }
     
     @SuppressWarnings("unchecked")
-    static <E, T extends Tag, A extends AbstractArrayTag<E, T, A>> A readArray(StringReader reader) throws CommandSyntaxException {
+    static <E, T extends Tag, O, A extends AbstractArrayTag<E, T, O, A>> A readArray(StringReader reader) throws CommandSyntaxException {
         reader.expect('[');
         reader.skipWhitespace();
         A array;
@@ -205,7 +205,7 @@ public interface Tag extends KnownSizeSerializable, TagLike, HasOps<Tag, TagOps>
     }
     
     @SuppressWarnings("unchecked")
-    static <E, T extends Tag, A extends AbstractArrayTag<E, T, A>> A readArray(StringReader reader, Supplier<A> supplier) throws CommandSyntaxException {
+    static <E, T extends Tag, O, A extends AbstractArrayTag<E, T, O, A>> A readArray(StringReader reader, Supplier<A> supplier) throws CommandSyntaxException {
         reader.expect('[');
         reader.skipWhitespace();
         A array = supplier.get();
@@ -397,5 +397,9 @@ public interface Tag extends KnownSizeSerializable, TagLike, HasOps<Tag, TagOps>
             buffer.writeByte(-1);
             return true;
         }
+    }
+    
+    default StringTag toStringTag() {
+        return StringTag.of(objectValue());
     }
 }

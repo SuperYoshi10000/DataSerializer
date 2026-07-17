@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import local.ytk.app.ds.data.type.TypeKey;
 
 public class WrapperTag<T extends Tag> implements ObjectTag<T, WrapperTag<T>> {
-    private final T tag;
+    public final T tag;
     
     public WrapperTag(T tag) {
         this.tag = tag;
@@ -21,12 +21,17 @@ public class WrapperTag<T extends Tag> implements ObjectTag<T, WrapperTag<T>> {
     }
     
     @Override
+    public StringTag toStringTag() {
+        return tag.toStringTag();
+    }
+    
+    @Override
     public boolean serialize(ByteBuf buffer) {
         return Tag.serializeEntry(tag, buffer);
     }
     
     public static class WithMetadata<T extends Tag, D> extends WrapperTag<T> {
-        private final D metadata;
+        final D metadata;
         
         public WithMetadata(T tag, D metadata) {
             super(tag);
@@ -45,9 +50,13 @@ public class WrapperTag<T extends Tag> implements ObjectTag<T, WrapperTag<T>> {
         
         @Override
         public boolean serialize(ByteBuf buffer) {
-            T tag = get();
             buffer.writeByte(tag.getId());
-            return metadata().serializer().applyAsBoolean(buffer, tag.get()) && Tag.serialize(tag, buffer);
+            return metadata.serializer().applyAsBoolean(buffer, tag.get()) && Tag.serialize(tag, buffer);
+        }
+        
+        @Override
+        public String toTagString() {
+            return "(" + metadata + ": " + tag.toTagString() + ")";
         }
     }
     

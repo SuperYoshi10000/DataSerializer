@@ -4,7 +4,7 @@ import local.ytk.app.ds.data.tag.MapTag;
 import local.ytk.app.ds.data.tag.Tag;
 import local.ytk.app.ds.entry.ListEntry;
 import local.ytk.app.ds.entry.MapEntry;
-import local.ytk.app.ds.res.Result;
+import local.ytk.util.Result;
 import local.ytk.app.ds.val.DataValue;
 
 import java.util.List;

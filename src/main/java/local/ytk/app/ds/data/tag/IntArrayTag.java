@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class IntArrayTag extends NumericArrayTag<Integer, IntTag, IntArrayTag> {
+public class IntArrayTag extends NumericArrayTag<Integer, IntTag, int[], IntArrayTag> {
     public static IntArrayTag of(int... array) {
         IntArrayTag tag = new IntArrayTag();
         for (int i : array) tag.add(i);
@@ -26,7 +26,7 @@ public class IntArrayTag extends NumericArrayTag<Integer, IntTag, IntArrayTag> {
     }
     
     @Override
-    public int[] objectValue() {
+    public int[] get() {
         return toPrimitiveArray();
     }
     @Override

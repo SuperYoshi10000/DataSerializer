@@ -30,7 +30,7 @@ dependencies {
     implementation 'com.mojang:brigadier:1.0.18'
     implementation 'com.mojang:datafixerupper:1.0.21'
     
-    implementation 'com.github.SuperYoshi10000:JavaUtils:0.1.1'
+    implementation 'com.github.SuperYoshi10000:JavaUtils:0.1.2'
     
     compileOnly 'org.jetbrains:annotations:26.0.2'
     

@@ -7,10 +7,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public record RepeatedTag<T extends TypedTag<T, T>, S extends RepeatedTag<T, S>>(T tag, int count) implements SequenceTag<T, T, S> {
+public record RepeatedTag<T extends TypedTag<T, T>, S extends RepeatedTag<T, S>>(T tag, int count) implements SequenceTag<T, T, S, S> {
     @Override
     public byte getId() {
         return TypedListTag.ARRAY_TYPE_OFFSET;
+    }
+    
+    @Override
+    public S get() {
+        return (S) this;
     }
     
     @Override

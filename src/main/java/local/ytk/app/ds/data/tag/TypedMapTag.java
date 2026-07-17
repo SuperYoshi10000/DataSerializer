@@ -29,8 +29,8 @@ public class TypedMapTag<V, T extends Tag, M extends TypedMapTag<V, T, M>> exten
     }
     
     @Override
-    public TypedMapTag<V, T, M> objectValue() {
-        return this;
+    public M objectValue() {
+        return (M) this;
     }
     
     @Override

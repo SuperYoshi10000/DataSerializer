@@ -59,7 +59,7 @@ public class TypedListTag<T extends Tag, S extends TypedListTag<T, S>> extends A
         return new Generic<>(tags);
     }
     
-    public static class Generic<T extends Tag> extends TypedListTag<T, Generic<T>> implements SequenceTag<T, T, Generic<T>> {
+    public static class Generic<T extends Tag> extends TypedListTag<T, Generic<T>> implements SequenceTag<T, T, Generic<T>, Generic<T>> {
         public Generic() {}
         @SafeVarargs
         public Generic(T... tags) {

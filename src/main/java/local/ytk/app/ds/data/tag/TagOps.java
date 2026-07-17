@@ -1,6 +1,7 @@
 package local.ytk.app.ds.data.tag;
 
 import local.ytk.app.ds.data.codecs.Ops;
+import org.apache.commons.lang3.reflect.TypeUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -93,13 +94,13 @@ public final class TagOps implements Ops<Tag> {
     public Tag ofStream() {
         return SequenceTag.empty();
     }
-    private <V, T extends Tag, S extends SequenceTag<V, T, S>> S toArray(TypedTag<V, ?> item) {
+    private <V, T extends Tag, U extends TypedTag<V, U>, S extends SequenceTag<V, T, ?, S>> S toArray(TypedTag<V, U> item) {
         S sequence = (S) item.getType().array();
         sequence.addTag((T) item);
         return sequence;
     }
     @Override
-    public <E extends Tag> SequenceTag<?, ?, ?> ofStream(E item) {
+    public <E extends Tag> SequenceTag<?, ?, ?, ?> ofStream(E item) {
         return toArray((TypedTag<?, ?>) item);
     }
     @Override

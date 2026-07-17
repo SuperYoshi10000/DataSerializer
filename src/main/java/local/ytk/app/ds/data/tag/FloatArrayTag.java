@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
-public class FloatArrayTag extends NumericArrayTag<Float, FloatTag, FloatArrayTag> {
+public class FloatArrayTag extends NumericArrayTag<Float, FloatTag, float[], FloatArrayTag> {
     public static FloatArrayTag of(float... array) {
         FloatArrayTag tag = new FloatArrayTag();
         for (float item : array) tag.add(item);
@@ -23,7 +23,7 @@ public class FloatArrayTag extends NumericArrayTag<Float, FloatTag, FloatArrayTa
     }
     
     @Override
-    public float[] objectValue() {
+    public float[] get() {
         return toPrimitiveArray();
     }
     @Override

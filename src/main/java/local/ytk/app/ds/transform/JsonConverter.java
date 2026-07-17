@@ -1,6 +1,6 @@
 package local.ytk.app.ds.transform;
 
-import local.ytk.app.ds.res.Result;
+import local.ytk.util.Result;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.JsonNode;

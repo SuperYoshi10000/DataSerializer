@@ -9,6 +9,8 @@
 - The Entry/Item/Value classes are newer and were originally part of this project
   - The tags were later updated to implement these interfaces
 
+AI was only used to complete lines I was already typing
+
 ## Usage
 You will need to [install Java](https://www.oracle.com/java/technologies/downloads/) to use this project (at least Java 25)
 

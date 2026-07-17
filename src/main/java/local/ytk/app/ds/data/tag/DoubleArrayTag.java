@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.List;
 
-public class DoubleArrayTag extends NumericArrayTag<Double, DoubleTag, DoubleArrayTag> {
+public class DoubleArrayTag extends NumericArrayTag<Double, DoubleTag, double[], DoubleArrayTag> {
     public static DoubleArrayTag of(double... array) {
         DoubleArrayTag tag = new DoubleArrayTag();
         for (double item : array) tag.add(item);
@@ -23,7 +23,7 @@ public class DoubleArrayTag extends NumericArrayTag<Double, DoubleTag, DoubleArr
     }
     
     @Override
-    public double[] objectValue() {
+    public double[] get() {
         return toPrimitiveArray();
     }
     @Override

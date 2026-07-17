@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class StringArrayTag extends AbstractArrayTag<String, StringTag, StringArrayTag> {
+public class StringArrayTag extends AbstractArrayTag<String, StringTag, String[], StringArrayTag> {
     public String @NotNull [] toArray() {
         return this.toArray(String[]::new);
     }
@@ -15,7 +15,7 @@ public class StringArrayTag extends AbstractArrayTag<String, StringTag, StringAr
     }
     
     @Override
-    public String[] objectValue() {
+    public String[] get() {
         return toArray();
     }
     

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractArrayTag<V, T extends Tag, S extends AbstractArrayTag<V, T, S>> extends ArrayList<V> implements SequenceTag<V, T, S> {
+public abstract class AbstractArrayTag<V, T extends Tag, O, S extends AbstractArrayTag<V, T, O, S>> extends ArrayList<V> implements SequenceTag<V, T, O, S> {
     public AbstractArrayTag() {}
     @SafeVarargs
     public AbstractArrayTag(V... tags) {

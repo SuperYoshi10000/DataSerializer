@@ -20,7 +20,7 @@ public abstract class AbstractCodec<T> implements Codec<T> {
     }
 
     @Override
-    public <O> T decode(Ops<O> ops, O o) {
+    public <O> Result<T> decode(Ops<O> ops, O o) {
         return decoder.decode(ops, o);
     }
     

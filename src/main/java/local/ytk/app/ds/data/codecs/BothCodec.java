@@ -5,7 +5,7 @@ import local.ytk.util.Result;
 
 public record BothCodec<A, B>(Codec<A> aCodec, Codec<B> bCodec) implements Codec<Pair<A, B>> {
     @Override
-    public <O> Pair<A, B> decode(Ops<O> ops, O o) {
+    public <O> Result<Pair<A, B>> decode(Ops<O> ops, O o) {
         return null;
     }
     

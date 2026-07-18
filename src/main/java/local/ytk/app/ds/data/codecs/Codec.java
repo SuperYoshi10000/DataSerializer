@@ -13,7 +13,7 @@ public interface Codec<T> extends Encoder<T>, Decoder<T> {
             }
             
             @Override
-            public <O> T decode(Ops<O> ops, O o) {
+            public <O> Result<T> decode(Ops<O> ops, O o) {
                 return decoder.decode(ops, o);
             }
         };

@@ -5,7 +5,7 @@ import local.ytk.util.Result;
 
 public record XorCodec<A, B>(Codec<A> aCodec, Codec<B> bCodec) implements Codec<Either<A, B>> {
     @Override
-    public <O> Either<A, B> decode(Ops<O> ops, O o) {
+    public <O> Result<Either<A, B>> decode(Ops<O> ops, O o) {
         return null;
     }
     

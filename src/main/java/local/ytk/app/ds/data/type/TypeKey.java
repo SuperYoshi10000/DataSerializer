@@ -7,11 +7,11 @@ import org.apache.commons.lang3.function.ToBooleanBiFunction;
 
 import java.util.function.Function;
 
-public record TypeKey<T, D>(String name, Class<T> type, Codec<T> codec, ToBooleanBiFunction<ByteBuf, D> serializer, Function<ByteBuf, Result<D>> deserializer) {
-    public TypeKey(Class<T> type, Codec<T> codec, ToBooleanBiFunction<ByteBuf, D> serializer, Function<ByteBuf, Result<D>> deserializer) {
+public record TypeKey<T>(String name, Class<T> type, Codec<T> codec, ToBooleanBiFunction<ByteBuf, T> serializer, Function<ByteBuf, Result<T>> deserializer) {
+    public TypeKey(Class<T> type, Codec<T> codec, ToBooleanBiFunction<ByteBuf, T> serializer, Function<ByteBuf, Result<T>> deserializer) {
         this(type.getSimpleName(), type, codec, serializer, deserializer);
     }
-//    public TypeKey(Class<T> type, Codec<T> codec) {
-//        this(type.getSimpleName(), type, codec, serializer, deserializer);
-//    }
+    public TypeKey(Class<T> type, Codec<T> codec) {
+        this(type.getSimpleName(), type, codec, codec::serialize, codec::deserialize);
+    }
 }

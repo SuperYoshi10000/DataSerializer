@@ -3,6 +3,8 @@ package local.ytk.app.ds.data.tag;
 import io.netty.buffer.ByteBuf;
 import local.ytk.app.ds.data.type.TypeKey;
 
+import java.nio.charset.Charset;
+
 public class WrapperTag<T extends Tag> implements ObjectTag<T, WrapperTag<T>> {
     public final T tag;
     
@@ -43,25 +45,26 @@ public class WrapperTag<T extends Tag> implements ObjectTag<T, WrapperTag<T>> {
         }
     }
     
-    public static class TypeDefined<V, D, T extends TypedTag<? extends D, T>> extends WithMetadata<T, TypeKey<V, D>> {
-        public TypeDefined(T tag, TypeKey<V, D> type) {
+    public static class TypeDefined<V, T extends TypedTag<?, T>> extends WithMetadata<T, TypeKey<V>> {
+        public TypeDefined(T tag, TypeKey<V> type) {
             super(tag, type);
         }
         
         @Override
         public boolean serialize(ByteBuf buffer) {
             buffer.writeByte(tag.getId());
-            return metadata.serializer().applyAsBoolean(buffer, tag.get()) && Tag.serialize(tag, buffer);
+            buffer.writeCharSequence(metadata.name(), Charset.defaultCharset());
+            return Tag.serialize(tag, buffer);
         }
         
         @Override
         public String toTagString() {
-            return "(" + metadata + ": " + tag.toTagString() + ")";
+            return "(" + metadata.name() + ": " + tag.toTagString() + ")";
         }
     }
     
-    public static class TypeDefinedBinary<V> extends TypeDefined<V, BinaryTag, BinaryTag> {
-        public TypeDefinedBinary(BinaryTag tag, TypeKey<V, BinaryTag> type) {
+    public static class TypeDefinedBinary<V> extends TypeDefined<V, BinaryTag> {
+        public TypeDefinedBinary(BinaryTag tag, TypeKey<V> type) {
             super(tag, type);
         }
     }

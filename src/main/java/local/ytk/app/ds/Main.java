@@ -30,12 +30,13 @@ public class Main {
             case "help" -> help();
             case "serialize" -> serialize(args);
             case "deserialize" -> deserialize(args);
-            case "convert" -> deserialize(args);
+            case "convert" -> convert(args);
             default -> unknown(args[0]);
         }
     }
     
     public static void serialize(String... args) {
+        boolean debug = ArrayUtils.contains(args, "-d");
         String format = Objects.equals(get(args, 1), "-f") ? get(args, 2) : null;
         String from = format == null ? get(args, 1) : get(args, 3);
         String to = format == null ? get(args, 2) : get(args, 4);
@@ -47,12 +48,17 @@ public class Main {
         if (format == null) format = from.replaceFirst("^.*\\.", ""); // File extension of input file
         if (to == null) to = from.replaceFirst("\\.\\S+$", FILE_EXTENSION);
         
+        if (debug) System.out.println("From: " + from + ", To: " + to + ", Format: " + format);
+        
         DataFormat<?, ?, ?> dataFormat = DataFormat.get(format);
         JsonNode json = dataFormat.mapper().readTree(new File(from));
         Tag tag = DataTransformer.JSON_TO_TAG.transform(json);
+        if (debug) System.out.println("Read input file");
         FileIO.DEFAULT.serialize(to, tag);
+        if (debug) System.out.println("Wrote output file");
     }
     public static void deserialize(String... args) {
+        boolean debug = ArrayUtils.contains(args, "-d");
         String format = Objects.equals(get(args, 1), "-f") ? get(args, 2) : null;
         String from = format == null ? get(args, 1) : get(args, 3);
         String to = format == null ? get(args, 2) : get(args, 4);
@@ -69,15 +75,20 @@ public class Main {
             format = to.replaceFirst("^.*\\.", ""); // File extension of output file
         } else if (to == null) to = from.replaceFirst("\\.\\S+$", FILE_EXTENSION);
         
+        if (debug) System.out.println("From: " + from + ", To: " + to + ", Format: " + format);
+        
         DataFormat<?, ?, ?> dataFormat = DataFormat.get(format);
         ByteBuf buf = FileIO.DEFAULT.deserialize(new File(from));
         Tag tag = Tag.deserialize(buf);
+        if (debug) System.out.println("Read input file (" + buf.writerIndex() + " bytes)");
         JsonNode json = DataTransformer.TAG_TO_JSON.transform(tag);
         JsonGenerator generator = dataFormat.factory().createGenerator(ObjectWriteContext.empty(), new File(to), JsonEncoding.UTF8);
         dataFormat.mapper().writeTree(generator, json);
+        if (debug) System.out.println("Wrote output file");
     }
     
     public static void convert(String... args) {
+        boolean debug = ArrayUtils.contains(args, "-d");
         String format1 = get(args, 1);
         String format2 = get(args, 2);
         String from = get(args, 3);
@@ -87,12 +98,15 @@ public class Main {
             System.err.println("Missing formats or input filename");
             System.exit(MISSING_ARGUMENT);
         }
+        if (debug) System.out.println("From: " + from + ", To: " + to + ", From Format: " + format1 + ", To Format: " + format2);
         
         DataFormat<?, ?, ?> dataFormat1 = DataFormat.get(format1);
         DataFormat<?, ?, ?> dataFormat2 = DataFormat.get(format2);
         JsonNode json = dataFormat1.mapper().readTree(new File(from));
+        if (debug) System.out.println("Read input file");
         JsonGenerator generator = dataFormat2.factory().createGenerator(ObjectWriteContext.empty(), new File(to), JsonEncoding.UTF8);
         dataFormat2.mapper().writeTree(generator, json);
+        if (debug) System.out.println("Wrote output file");
     }
     
     public static void help() {

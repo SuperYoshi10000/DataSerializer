@@ -85,6 +85,7 @@ public class ListTag extends AbstractListTag<Tag, ListTag> {
             if (tag == null) return null;
             list.add(tag);
         }
+        buffer.readByte(); // Should be 0xFF (End tag)
         return list;
     }
 }

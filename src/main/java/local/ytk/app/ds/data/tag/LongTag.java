@@ -11,7 +11,7 @@ public class LongTag extends NumericTag<Long, LongTag> implements LongValue {
     public static final LongTag ZERO = of(0);
     public static final LongTag ONE = of(1);
     public static final LongTag NEGATIVE_ONE = of(-1);
-    private static final TreeMap<Long, LongTag> cache = new TreeMap<>();
+    private static TreeMap<Long, LongTag> cache = new TreeMap<>();
     
     private final long value;
     LongTag(long value) {
@@ -33,8 +33,9 @@ public class LongTag extends NumericTag<Long, LongTag> implements LongValue {
     
     @SuppressWarnings("all")
     public static LongTag of(long value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
+        if (cache == null) cache = new TreeMap<>();
+        else if (cache.containsKey(value)) return cache.get(value);
+        else if (cache.size() > 4096) {
             if (value > 0) cache.remove(cache.lastKey());
             else cache.remove(cache.firstKey());
         }

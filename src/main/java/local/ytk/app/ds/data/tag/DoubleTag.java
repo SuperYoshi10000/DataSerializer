@@ -27,8 +27,9 @@ public class DoubleTag extends NumericTag<Double, DoubleTag> implements DoubleVa
     
     @SuppressWarnings("all")
     public static DoubleTag of(double value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
+        if (cache == null) cache = new TreeMap<>();
+        else if (cache.containsKey(value)) return cache.get(value);
+        else if (cache.size() > 4096) {
             if (value > 0) cache.remove(cache.lastKey());
             else cache.remove(cache.firstKey());
         }
@@ -49,7 +50,7 @@ public class DoubleTag extends NumericTag<Double, DoubleTag> implements DoubleVa
         return of(buffer.readDouble());
     }
 
-    private static final TreeMap<Double, DoubleTag> cache = new TreeMap<>();
+    private static TreeMap<Double, DoubleTag> cache = new TreeMap<>();
 
     @Override
     public byte getId() {

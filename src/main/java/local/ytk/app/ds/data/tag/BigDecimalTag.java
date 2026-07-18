@@ -34,14 +34,7 @@ public class BigDecimalTag extends NumericTag<BigDecimal, BigDecimalTag> impleme
     
     @SuppressWarnings("all")
     public static BigDecimalTag of(BigDecimal value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
-            if (value.signum() > 0) cache.remove(cache.lastKey());
-            else cache.remove(cache.firstKey());
-        }
-        BigDecimalTag result = new BigDecimalTag(value);
-        cache.put(value, result);
-        return result;
+        return new BigDecimalTag(value);
     }
     public static BigDecimalTag of(@NotNull String value) {
         return of(Double.parseDouble(value));
@@ -55,8 +48,6 @@ public class BigDecimalTag extends NumericTag<BigDecimal, BigDecimalTag> impleme
     public static BigDecimalTag deserialize(@NotNull ByteBuf buffer) {
         return of(buffer.readDouble());
     }
-
-    private static final TreeMap<BigDecimal, BigDecimalTag> cache = new TreeMap<>();
     
     @Override
     public BigDecimal objectValue() {

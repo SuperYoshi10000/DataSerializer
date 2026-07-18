@@ -34,14 +34,7 @@ public class BigIntTag extends NumericTag<BigInteger, BigIntTag> implements Obje
     
     @SuppressWarnings("all")
     public static BigIntTag of(BigInteger value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
-            if (value.signum() > 0) cache.remove(cache.lastKey());
-            else cache.remove(cache.firstKey());
-        }
-        BigIntTag result = new BigIntTag(value);
-        cache.put(value, result);
-        return result;
+        return new BigIntTag(value);
     }
     public static BigIntTag of(@NotNull String value) {
         return of(Double.parseDouble(value));
@@ -55,8 +48,6 @@ public class BigIntTag extends NumericTag<BigInteger, BigIntTag> implements Obje
     public static BigIntTag deserialize(@NotNull ByteBuf buffer) {
         return of(buffer.readDouble());
     }
-
-    private static final TreeMap<BigInteger, BigIntTag> cache = new TreeMap<>();
     
     @Override
     public BigInteger objectValue() {

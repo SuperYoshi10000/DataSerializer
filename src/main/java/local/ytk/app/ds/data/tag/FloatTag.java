@@ -32,8 +32,9 @@ public class FloatTag extends NumericTag<Float, FloatTag> implements FloatValue 
     
     @SuppressWarnings("all")
     public static FloatTag of(float value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
+        if (cache == null) cache = new TreeMap<>();
+        else if (cache.containsKey(value)) return cache.get(value);
+        else if (cache.size() > 4096) {
             if (value > 0) cache.remove(cache.lastKey());
             else cache.remove(cache.firstKey());
         }
@@ -54,7 +55,7 @@ public class FloatTag extends NumericTag<Float, FloatTag> implements FloatValue 
         return of(buffer.readFloat());
     }
 
-    private static final TreeMap<Float, FloatTag> cache = new TreeMap<>();
+    private static TreeMap<Float, FloatTag> cache = new TreeMap<>();
 
     public byte getId() {
         return TYPE;

@@ -32,8 +32,9 @@ public class ShortTag extends NumericTag<Short, ShortTag> implements ShortValue 
 
     @SuppressWarnings("all")
     public static ShortTag of(short value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
+        if (cache == null) cache = new TreeMap<>();
+        else if (cache.containsKey(value)) return cache.get(value);
+        else if (cache.size() > 4096) {
             if (value > 0) cache.remove(cache.lastKey());
             else cache.remove(cache.firstKey());
         }
@@ -63,7 +64,7 @@ public class ShortTag extends NumericTag<Short, ShortTag> implements ShortValue 
         return of(buffer.readShort());
     }
 
-    private static final TreeMap<Short, ShortTag> cache = new TreeMap<>();
+    private static TreeMap<Short, ShortTag> cache = new TreeMap<>();
 
     public byte getId() {
         return TYPE;

@@ -105,5 +105,8 @@ public class BinaryTag extends WrappedByteBuf implements SelfObjectTag<BinaryTag
         return buf.writerIndex(); // assume it will not be moved backwards
     }
     
-    
+    @Override
+    public BinaryTag copy() {
+        return SelfObjectTag.super.copy();
+    }
 }

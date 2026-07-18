@@ -45,7 +45,9 @@ public class CompoundTag extends MapTag<Tag, CompoundTag> {
         buffer.writeInt(size());
         for (Map.Entry<String, Tag> entry : entrySet()) {
             buffer.writeByte(entry.getValue().getId());
-            buffer.writeCharSequence(entry.getKey(), StandardCharsets.UTF_8);
+            String key = entry.getKey();
+            buffer.writeInt(key.length());
+            buffer.writeCharSequence(key, StandardCharsets.UTF_8);
             if (!entry.getValue().serialize(buffer)) return false;
         }
         buffer.writeByte(END);
@@ -65,6 +67,7 @@ public class CompoundTag extends MapTag<Tag, CompoundTag> {
             Tag value = Tag.deserialize(id, buffer);
             tag.put(key, value);
         }
+        buffer.readByte(); // Should be 0xFF (End tag)
         return tag;
     }
     

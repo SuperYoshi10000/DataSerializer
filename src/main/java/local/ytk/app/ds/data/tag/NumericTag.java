@@ -69,15 +69,4 @@ public abstract class NumericTag<N extends Number, T extends NumericTag<N, T>> e
     public String toTagString() {
         return TAG_CODES[getId()];
     }
-    
-    @Override
-    public int size() {
-        return switch (objectValue()) {
-            case Byte _ -> 1;
-            case Short _ -> 2;
-            case Integer _, Float _ -> 4;
-            case Long _, Double _ -> 8;
-            default -> TypedTag.super.size();
-        };
-    }
 }

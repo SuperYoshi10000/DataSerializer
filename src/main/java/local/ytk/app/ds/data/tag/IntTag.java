@@ -32,8 +32,9 @@ public class IntTag extends NumericTag<Integer, IntTag> implements IntValue {
     
     @SuppressWarnings("all")
     public static IntTag of(int value) {
-        if (cache.containsKey(value)) return cache.get(value);
-        if (cache.size() > 4096) {
+        if (cache == null) cache = new TreeMap<>();
+        else if (cache.containsKey(value)) return cache.get(value);
+        else if (cache.size() > 4096) {
             if (value > 0) cache.remove(cache.lastKey());
             else cache.remove(cache.firstKey());
         }
@@ -57,7 +58,7 @@ public class IntTag extends NumericTag<Integer, IntTag> implements IntValue {
         return of(buffer.readInt());
     }
 
-    private static final TreeMap<Integer, IntTag> cache = new TreeMap<>();
+    private static TreeMap<Integer, IntTag> cache = new TreeMap<>();
 
     public byte getId() {
         return TYPE;

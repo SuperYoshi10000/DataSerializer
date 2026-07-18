@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.FileSystems;
 
-public class FileIO implements IOSerializer.Named<File> {
+public class FileIO implements IOSerializer.Named<File, Serializable> {
     public static final FileIO DEFAULT = new FileIO();
     
     @Override

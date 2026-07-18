@@ -7,8 +7,10 @@ import local.ytk.util.Result;
 import local.ytk.app.ds.val.DataValue;
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TagConverter implements DataConverter<Tag> {
     public static final TagConverter INSTANCE = new TagConverter();
@@ -218,7 +220,16 @@ public class TagConverter implements DataConverter<Tag> {
     
     @Override
     public Result<Object> read(Tag input) {
-        return Result.success(input.objectValue());
+        return switch (input) {
+            case DictionaryTag<?, ?, ?> m -> Result.success(m.entrySet().stream().collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> read(e.getValue()),
+                    (a, b) -> b,
+                    LinkedHashMap::new
+            )));
+            case AbstractListTag<?, ?> m -> Result.success(m.stream().map(this::read).toList());
+            default -> Result.success(input);
+        };
     }
     
     @Override

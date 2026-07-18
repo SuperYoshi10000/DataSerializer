@@ -1,5 +1,5 @@
 package local.ytk.app.ds.data.save;
 
-public interface IOSerializer<T> extends Serializer<T>, Deserializer<T> {
-    interface Named<T> extends Serializer.Named<T>, Deserializer<T> {}
+public interface IOSerializer<T, S extends Serializable> extends Serializer<T, S>, Deserializer<T> {
+    interface Named<T, S extends Serializable> extends Serializer.Named<T, S>, Deserializer<T> {}
 }

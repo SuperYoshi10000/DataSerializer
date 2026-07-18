@@ -38,7 +38,9 @@ public class TypedMapTag<V, T extends Tag, M extends TypedMapTag<V, T, M>> exten
         buffer.writeByte(getItemId());
         buffer.writeInt(size());
         for (Map.Entry<String, T> entry : entrySet()) {
-            buffer.writeCharSequence(entry.getKey(), StandardCharsets.UTF_8);
+            String key = entry.getKey();
+            buffer.writeInt(key.length());
+            buffer.writeCharSequence(key, StandardCharsets.UTF_8);
             if (!entry.getValue().serialize(buffer)) return false;
         }
         buffer.writeByte(END);

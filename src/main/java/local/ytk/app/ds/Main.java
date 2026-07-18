@@ -2,6 +2,7 @@ package local.ytk.app.ds;
 
 import io.netty.buffer.ByteBuf;
 import local.ytk.app.ds.data.save.FileIO;
+import local.ytk.app.ds.data.save.Serializable;
 import local.ytk.app.ds.data.tag.Tag;
 import local.ytk.app.ds.transform.AbstractDataTransformer;
 import local.ytk.app.ds.transform.DataTransformer;
@@ -74,7 +75,10 @@ public class Main {
         JsonNode json = dataFormat.mapper().readTree(new File(from));
         Tag tag = AbstractDataTransformer.JSON_TO_TAG.transform(json);
         if (debug) System.out.println("Read input file");
-        FileIO.DEFAULT.serialize(to, tag);
+        FileIO.DEFAULT.<Tag>onInit((b, t) -> {
+            b.writeByte(t.getId());
+            t.serialize(b);
+        }).serialize(to, tag);
         if (debug) System.out.println("Wrote output file");
     }
     public static void deserialize(String... args) {

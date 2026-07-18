@@ -32,8 +32,7 @@ public interface DataCreator<T> extends DataOperator<T> {
                             LinkedHashMap::new
                     ))
             );
-            case null -> createNull();
-            default -> null;
+            case null, default -> createNull();
         };
     }
     T createBoolean(boolean input);

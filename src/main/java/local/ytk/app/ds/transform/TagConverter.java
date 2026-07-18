@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 public class TagConverter implements DataConverter<Tag> {
+    public static final TagConverter INSTANCE = new TagConverter();
+    
+    private TagConverter() {}
+    
     @Override
     public Tag get(Tag input, String key) {
         return input instanceof MapTag<?, ?> mapTag ? mapTag.get(key) : null;

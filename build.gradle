@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'local.ytk.app.ds'
-version = '0.1.0'
+version = '0.1.1'
 
 repositories {
     mavenCentral()
@@ -25,10 +25,32 @@ dependencies {
     implementation "it.unimi.dsi:fastutil:8.5.13"
     implementation 'org.apache.commons:commons-lang3:3.18.0'
     implementation "org.apache.commons:commons-collections4:4.4"
-    implementation 'tools.jackson.core:jackson-databind:3.2.0'
     implementation "io.netty:netty-all:4.2.16.Final"
     implementation 'com.mojang:brigadier:1.0.18'
     implementation 'com.mojang:datafixerupper:1.0.21'
+    
+    // Jackson
+    implementation platform('tools.jackson:jackson-bom:3.2.0')
+    
+    implementation 'tools.jackson.core:jackson-core'
+    implementation 'tools.jackson.core:jackson-databind'
+    implementation 'tools.jackson.core:jackson-annotations'
+    
+    implementation 'tools.jackson.dataformat:jackson-dataformat-yaml'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-xml'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-cbor'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-smile'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-properties'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-csv'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-toml'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-avro'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-protobuf'
+    implementation 'tools.jackson.dataformat:jackson-dataformat-ion'
+    
+    implementation 'de.undercouch:bson4jackson:3.2.0'
+    implementation 'com.siemens.ct.exi:exificient-for-json:1.0.1-SNAPSHOT'
+    implementation 'org.msgpack:jackson-dataformat-msgpack:0.9.12'
+    
     
     implementation 'com.github.SuperYoshi10000:JavaUtils:0.1.2'
     

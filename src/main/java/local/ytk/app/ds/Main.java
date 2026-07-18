@@ -10,7 +10,10 @@ import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.ObjectWriteContext;
 import tools.jackson.databind.JsonNode;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Objects;
 
 import static org.apache.commons.lang3.ArrayUtils.get;
@@ -26,6 +29,20 @@ public class Main {
             help();
             return;
         }
+        
+        String[] runArgs;
+        if (Objects.equals(args[0], "--input-args")) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                System.out.print("ARGS>>> ");
+                runArgs = reader.readLine().split(" ");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else runArgs = args;
+    }
+    
+    public static void run(String... args) {
         switch (args[0]) {
             case "help" -> help();
             case "serialize" -> serialize(args);

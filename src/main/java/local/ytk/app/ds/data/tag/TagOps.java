@@ -1,7 +1,7 @@
 package local.ytk.app.ds.data.tag;
 
 import local.ytk.app.ds.data.codecs.Ops;
-import org.apache.commons.lang3.reflect.TypeUtils;
+import local.ytk.util.Result;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,38 +57,38 @@ public final class TagOps implements Ops<Tag> {
         return ByteTag.of(b);
     }
     @Override
-    public Number getNumber(Tag tag) {
+    public Result<Number> getNumber(Tag tag) {
         return null;
     }
-    public byte getByte(Tag t) {
-        return t instanceof NumericTag<?, ?> n ? n.byteValue() : Byte.parseByte(t.toString());
+    public Result<Byte> getByte(Tag t) {
+        return Result.success(t instanceof NumericTag<?, ?> n ? n.byteValue() : Byte.parseByte(t.toString()));
     }
-    public short getShort(Tag t) {
-        return t instanceof NumericTag<?, ?> n ? n.shortValue() : Short.parseShort(t.toString());
+    public Result<Short> getShort(Tag t) {
+        return Result.success(t instanceof NumericTag<?, ?> n ? n.shortValue() : Short.parseShort(t.toString()));
     }
-    public int getInt(Tag t) {
-        return t instanceof NumericTag<?, ?> n ? n.intValue() : Integer.parseInt(t.toString());
+    public Result<Integer> getInt(Tag t) {
+        return Result.success(t instanceof NumericTag<?, ?> n ? n.intValue() : Integer.parseInt(t.toString()));
     }
-    public long getLong(Tag t) {
-        return t instanceof NumericTag<?, ?> n ? n.longValue() : Long.parseLong(t.toString());
+    public Result<Long> getLong(Tag t) {
+        return Result.success(t instanceof NumericTag<?, ?> n ? n.longValue() : Long.parseLong(t.toString()));
     }
-    public float getFloat(Tag t) {
-        return t instanceof NumericTag<?, ?> n ? n.floatValue() : Float.parseFloat(t.toString());
+    public Result<Float> getFloat(Tag t) {
+        return Result.success(t instanceof NumericTag<?, ?> n ? n.floatValue() : Float.parseFloat(t.toString()));
     }
-    public double getDouble(Tag t) {
-        return t instanceof NumericTag<?, ?> n ? n.doubleValue() : Double.parseDouble(t.toString());
-    }
-    @Override
-    public String getString(Tag tag) {
-        return tag.toString();
+    public Result<Double> getDouble(Tag t) {
+        return Result.success(t instanceof NumericTag<?, ?> n ? n.doubleValue() : Double.parseDouble(t.toString()));
     }
     @Override
-    public char getChar(Tag tag) {
-        return tag instanceof NumericTag<?, ?> n ? (char)n.shortValue() : tag.toString().charAt(0);
+    public Result<String> getString(Tag tag) {
+        return Result.success(tag.toString());
     }
     @Override
-    public boolean getBool(Tag tag) {
-        return tag instanceof NumericTag<?, ?> n ? !n.isZero() : !(tag instanceof StringTag s) || s.truthy();
+    public Result<Character> getChar(Tag tag) {
+        return Result.success(tag instanceof NumericTag<?, ?> n ? (char)n.shortValue() : tag.toString().charAt(0));
+    }
+    @Override
+    public Result<Boolean> getBool(Tag tag) {
+        return Result.success(tag instanceof NumericTag<?, ?> n ? !n.isZero() : !(tag instanceof StringTag s) || s.truthy());
     }
     @Override
     public Tag ofStream() {
@@ -120,7 +120,7 @@ public final class TagOps implements Ops<Tag> {
         return null;
     }
     @Override
-    public <E> Stream<E> getStream(Tag tag) {
+    public <E> Result<Stream<E>> getStream(Tag tag) {
         return null;
     }
     @Override
@@ -164,7 +164,7 @@ public final class TagOps implements Ops<Tag> {
         return null;
     }
     @Override
-    public <E> List<E> getList(Tag tag) {
+    public <E> Result<List<E>> getList(Tag tag) {
         return null;
     }
     @Override
@@ -204,7 +204,7 @@ public final class TagOps implements Ops<Tag> {
         return null;
     }
     @Override
-    public <K, V> Map<K, V> getMap(Tag tag) {
+    public <K, V> Result<Map<K, V>> getMap(Tag tag) {
         return null;
     }
 }

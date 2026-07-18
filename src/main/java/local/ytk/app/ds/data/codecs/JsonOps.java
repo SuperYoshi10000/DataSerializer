@@ -1,5 +1,6 @@
 package local.ytk.app.ds.data.codecs;
 
+import local.ytk.util.Result;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.ArrayNode;
 import tools.jackson.databind.node.JsonNodeFactory;
@@ -14,15 +15,15 @@ import java.util.stream.Stream;
 public class JsonOps implements Ops<JsonNode> {
     public static final JsonNodeFactory FACTORY = JsonNodeFactory.instance;
     @Override
-    public Object getObject(JsonNode node) {
+    public Result<?> getObject(JsonNode node) {
         return switch (node.getNodeType()) {
-            case ARRAY -> node.values();
-            case BINARY -> node.binaryValue();
-            case BOOLEAN -> node.booleanValue();
-            case NUMBER -> node.numberValue();
-            case OBJECT -> node.asObject().properties().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            case POJO -> ((POJONode) node).getPojo();
-            case STRING -> node.stringValue();
+            case ARRAY -> Result.success(node.values());
+            case BINARY -> Result.success(node.binaryValue());
+            case BOOLEAN -> getBool(node);
+            case NUMBER -> getNumber(node);
+            case OBJECT -> Result.success(node.asObject().properties().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+            case POJO -> Result.success(((POJONode) node).getPojo());
+            case STRING -> getString(node);
             default -> null;
         };
     }
@@ -51,20 +52,20 @@ public class JsonOps implements Ops<JsonNode> {
         return FACTORY.booleanNode(b);
     }
     @Override
-    public Number getNumber(JsonNode node) {
-        return node.isNumber() ? node.numberValue() : 0d;
+    public Result<Number> getNumber(JsonNode node) {
+        return node.isNumber() ? Result.success(node.numberValue()) : Result.failure();
     }
     @Override
-    public String getString(JsonNode node) {
-        return node.isString() ? node.stringValue() : node.toString();
+    public Result<String> getString(JsonNode node) {
+        return Result.success(node.isString() ? node.stringValue() : node.toString());
     }
     @Override
-    public char getChar(JsonNode node) {
-        return node.isString() ? node.stringValue().charAt(0) : 0;
+    public Result<Character> getChar(JsonNode node) {
+        return node.isString() ? Result.success(node.stringValue().charAt(0)) : Result.failure();
     }
     @Override
-    public boolean getBool(JsonNode node) {
-        return switch (node.getNodeType()) {
+    public Result<Boolean> getBool(JsonNode node) {
+        return Result.success(switch (node.getNodeType()) {
             case ARRAY -> !node.isEmpty();
             case BINARY -> node.binaryValue().length > 0;
             case BOOLEAN -> node.booleanValue();
@@ -73,7 +74,7 @@ public class JsonOps implements Ops<JsonNode> {
             case OBJECT -> true;
             case POJO -> ((POJONode) node).getPojo() != null;
             case STRING -> !node.stringValue().isEmpty();
-        };
+        });
     }
     @Override
     public JsonNode ofStream() {
@@ -100,7 +101,7 @@ public class JsonOps implements Ops<JsonNode> {
         return null;
     }
     @Override
-    public <E> Stream<E> getStream(JsonNode node) {
+    public <E> Result<Stream<E>> getStream(JsonNode node) {
         return null;
     }
     @Override
@@ -152,7 +153,7 @@ public class JsonOps implements Ops<JsonNode> {
         return null;
     }
     @Override
-    public <E> List<E> getList(JsonNode node) {
+    public <E> Result<List<E>> getList(JsonNode node) {
         return null;
     }
     @Override
@@ -192,7 +193,7 @@ public class JsonOps implements Ops<JsonNode> {
         return null;
     }
     @Override
-    public <K, V> Map<K, V> getMap(JsonNode node) {
+    public <K, V> Result<Map<K, V>> getMap(JsonNode node) {
         return null;
     }
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'local.ytk.app.ds'
-version = '0.1.1'
+version = '0.2.0'
 
 repositories {
     mavenCentral()
@@ -34,7 +34,7 @@ dependencies {
     
     implementation 'tools.jackson.core:jackson-core'
     implementation 'tools.jackson.core:jackson-databind'
-    implementation 'tools.jackson.core:jackson-annotations'
+//    implementation 'tools.jackson.core:jackson-annotations'
     
     implementation 'tools.jackson.dataformat:jackson-dataformat-yaml'
     implementation 'tools.jackson.dataformat:jackson-dataformat-xml'
@@ -47,9 +47,9 @@ dependencies {
     implementation 'tools.jackson.dataformat:jackson-dataformat-protobuf'
     implementation 'tools.jackson.dataformat:jackson-dataformat-ion'
     
-    implementation 'de.undercouch:bson4jackson:3.2.0'
-    implementation 'com.siemens.ct.exi:exificient-for-json:1.0.1-SNAPSHOT'
-    implementation 'org.msgpack:jackson-dataformat-msgpack:0.9.12'
+//    implementation 'de.undercouch:bson4jackson:3.2.0'
+//    implementation 'com.siemens.ct.exi:exificient-for-json:1.0.1-SNAPSHOT'
+//    implementation 'org.msgpack:jackson-dataformat-msgpack:0.9.12'
     
     
     implementation 'com.github.SuperYoshi10000:JavaUtils:0.1.2'

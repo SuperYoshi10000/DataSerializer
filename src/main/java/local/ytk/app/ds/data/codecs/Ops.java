@@ -1,5 +1,6 @@
 package local.ytk.app.ds.data.codecs;
 
+import local.ytk.util.Result;
 import local.ytk.util.collection.Mapper;
 
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.stream.Stream;
 public interface Ops<T> {
     <U> U convert(T t, Ops<U> outOps);
     
-    default Object getObject(T t) {
+    default Result<?> getObject(T t) {
         return null;
     }
     
@@ -38,28 +39,28 @@ public interface Ops<T> {
     T ofChar(char c);
     T ofBool(boolean b);
     
-    Number getNumber(T t);
-    String getString(T t);
-    default byte getByte(T t) {
-        return getNumber(t).byteValue();
+    Result<Number> getNumber(T t);
+    Result<String> getString(T t);
+    default Result<Byte> getByte(T t) {
+        return getNumber(t).map(Number::byteValue);
     }
-    default short getShort(T t) {
-        return getNumber(t).shortValue();
+    default Result<Short> getShort(T t) {
+        return getNumber(t).map(Number::shortValue);
     }
-    default int getInt(T t) {
-        return getNumber(t).intValue();
+    default Result<Integer> getInt(T t) {
+        return getNumber(t).map(Number::intValue);
     }
-    default long getLong(T t) {
-        return getNumber(t).longValue();
+    default Result<Long> getLong(T t) {
+        return getNumber(t).map(Number::longValue);
     }
-    default float getFloat(T t) {
-        return getNumber(t).floatValue();
+    default Result<Float> getFloat(T t) {
+        return getNumber(t).map(Number::floatValue);
     }
-    default double getDouble(T t) {
-        return getNumber(t).doubleValue();
+    default Result<Double> getDouble(T t) {
+        return getNumber(t).map(Number::doubleValue);
     }
-    char getChar(T t);
-    boolean getBool(T t);
+    Result<Character> getChar(T t);
+    Result<Boolean> getBool(T t);
     
     T ofStream();
     <E extends T> T ofStream(E item);
@@ -67,7 +68,7 @@ public interface Ops<T> {
     <E extends T> T mergeStream(T stream, E item);
     <E extends T> T mergeStreams(T stream, Stream<E> items);
     T mergeStreams(T stream1, T stream2);
-    <E> Stream<E> getStream(T t);
+    <E> Result<Stream<E>> getStream(T t);
     
     T ofList();
     default <E extends T> T ofList(E item) {
@@ -82,21 +83,21 @@ public interface Ops<T> {
     <E extends T> E set(T list, int index, E value);
     <E extends T> E get(T list, int index);
     <E extends T> E remove(T list, int index);
-    <E> List<E> getList(T t);
+    <E> Result<List<E>> getList(T t);
     
-    default int getSize(T t) {
+    default Result<Integer> getSize(T t) {
         Object o = getObject(t);
-        return o instanceof List<?> l ? l.size() : o instanceof Map<?, ?> m ? m.size() : o instanceof Object[] a ? a.length : 0;
+        return o instanceof List<?> l ? Result.success(l.size()) : o instanceof Map<?, ?> m ? Result.success(m.size()) : o instanceof Object[] a ? Result.success(a.length) : Result.failure();
     }
-    default Class<?> getClass(T t) {
-        return getObject(t).getClass();
+    default Result<Class<?>> getClass(T t) {
+        return getObject(t).map(Object::getClass);
     }
     
     default <E extends T> T ofArray(E... items) {
         return ofList(Arrays.asList(items));
     }
-    default <E extends T> E[] getArray(T array, IntFunction<E[]> generator) {
-        return getList(array).toArray(generator);
+    default <E extends T> Result<E[]> getArray(T array, IntFunction<E[]> generator) {
+        return getList(array).map(l -> l.toArray(generator));
     }
     /*
     static <T, E extends T> Decoder<E[]> getArrayDecoder(IntFunction<E[]> generator) {
@@ -114,7 +115,7 @@ public interface Ops<T> {
     <K extends T, V extends T> V set(T map, K k, V v);
     <K extends T, V extends T> V get(T map, K k);
     <K extends T, V extends T> V remove(T map, K k);
-    <K, V> Map<K, V> getMap(T t);
+    <K, V> Result<Map<K, V>> getMap(T t);
     
     default <U> Ops<U> map() {
         return null;
@@ -171,44 +172,44 @@ public interface Ops<T> {
                 return mapper.apply(Ops.this.ofBool(b));
             }
             @Override
-            public Number getNumber(U u) {
+            public Result<Number> getNumber(U u) {
                 return null;
             }
             @Override
-            public String getString(U u) {
+            public Result<String> getString(U u) {
                 return null;
             }
             @Override
-            public byte getByte(U u) {
-                return 0;
+            public Result<Byte> getByte(U u) {
+                return Result.success((byte) 0);
             }
             @Override
-            public short getShort(U u) {
-                return 0;
+            public Result<Short> getShort(U u) {
+                return Result.success((short) 0);
             }
             @Override
-            public int getInt(U u) {
-                return 0;
+            public Result<Integer> getInt(U u) {
+                return Result.success(0);
             }
             @Override
-            public long getLong(U u) {
-                return 0;
+            public Result<Long> getLong(U u) {
+                return Result.success(0L);
             }
             @Override
-            public float getFloat(U u) {
-                return 0;
+            public Result<Float> getFloat(U u) {
+                return Result.success(0f);
             }
             @Override
-            public double getDouble(U u) {
-                return 0;
+            public Result<Double> getDouble(U u) {
+                return Result.success(0d);
             }
             @Override
-            public char getChar(U u) {
-                return 0;
+            public Result<Character> getChar(U u) {
+                return Result.success('\0');
             }
             @Override
-            public boolean getBool(U u) {
-                return false;
+            public Result<Boolean> getBool(U u) {
+                return Result.success(false);
             }
             @Override
             public U ofStream() {
@@ -235,7 +236,7 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <E> Stream<E> getStream(U u) {
+            public <E> Result<Stream<E>> getStream(U u) {
                 return null;
             }
             @Override
@@ -283,12 +284,12 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <E> List<E> getList(U u) {
+            public <E> Result<List<E>> getList(U u) {
                 return null;
             }
             @Override
-            public int getSize(U u) {
-                return 0;
+            public Result<Integer> getSize(U u) {
+                return Result.failure();
             }
             @Override
             public U ofMap() {
@@ -327,7 +328,7 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <K, V> Map<K, V> getMap(U u) {
+            public <K, V> Result<Map<K, V>> getMap(U u) {
                 return null;
             }
         };
@@ -336,7 +337,7 @@ public interface Ops<T> {
     default <U> Ops<U> mapReverse(Function<U, T> reverseMapper) {
         return new Ops<>() {
             @Override
-            public Object getObject(U u) {
+            public Result<?> getObject(U u) {
                 return Ops.this.getObject(reverseMapper.apply(u));
             }
             @Override
@@ -388,43 +389,43 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public Number getNumber(U u) {
+            public Result<Number> getNumber(U u) {
                 return Ops.this.getNumber(reverseMapper.apply(u));
             }
             @Override
-            public String getString(U u) {
+            public Result<String> getString(U u) {
                 return Ops.this.getString(reverseMapper.apply(u));
             }
             @Override
-            public byte getByte(U u) {
+            public Result<Byte> getByte(U u) {
                 return Ops.this.getByte(reverseMapper.apply(u));
             }
             @Override
-            public short getShort(U u) {
+            public Result<Short> getShort(U u) {
                 return Ops.this.getShort(reverseMapper.apply(u));
             }
             @Override
-            public int getInt(U u) {
+            public Result<Integer> getInt(U u) {
                 return Ops.this.getInt(reverseMapper.apply(u));
             }
             @Override
-            public long getLong(U u) {
+            public Result<Long> getLong(U u) {
                 return Ops.this.getLong(reverseMapper.apply(u));
             }
             @Override
-            public float getFloat(U u) {
+            public Result<Float> getFloat(U u) {
                 return Ops.this.getFloat(reverseMapper.apply(u));
             }
             @Override
-            public double getDouble(U u) {
+            public Result<Double> getDouble(U u) {
                 return Ops.this.getDouble(reverseMapper.apply(u));
             }
             @Override
-            public char getChar(U u) {
+            public Result<Character> getChar(U u) {
                 return Ops.this.getChar(reverseMapper.apply(u));
             }
             @Override
-            public boolean getBool(U u) {
+            public Result<Boolean> getBool(U u) {
                 return Ops.this.getBool(reverseMapper.apply(u));
             }
             @Override
@@ -452,7 +453,7 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <E> Stream<E> getStream(U u) {
+            public <E> Result<Stream<E>> getStream(U u) {
                 return Ops.this.getStream(reverseMapper.apply(u));
             }
             @Override
@@ -500,11 +501,11 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <E> List<E> getList(U u) {
+            public <E> Result<List<E>> getList(U u) {
                 return Ops.this.getList(reverseMapper.apply(u));
             }
             @Override
-            public int getSize(U u) {
+            public Result<Integer> getSize(U u) {
                 return Ops.this.getSize(reverseMapper.apply(u));
             }
             @Override
@@ -544,7 +545,7 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <K, V> Map<K, V> getMap(U u) {
+            public <K, V> Result<Map<K, V>> getMap(U u) {
                 return Ops.this.getMap(reverseMapper.apply(u));
             }
         };
@@ -553,7 +554,7 @@ public interface Ops<T> {
     default <U> Ops<U> map(Function<T, U> mapper, Function<U, T> reverseMapper) {
         return new Ops<>() {
             @Override
-            public Object getObject(U u) {
+            public Result<?> getObject(U u) {
                 return Ops.this.getObject(reverseMapper.apply(u));
             }
             @Override
@@ -605,43 +606,43 @@ public interface Ops<T> {
                 return mapper.apply(Ops.this.ofBool(b));
             }
             @Override
-            public Number getNumber(U u) {
+            public Result<Number> getNumber(U u) {
                 return Ops.this.getNumber(reverseMapper.apply(u));
             }
             @Override
-            public String getString(U u) {
+            public Result<String> getString(U u) {
                 return Ops.this.getString(reverseMapper.apply(u));
             }
             @Override
-            public byte getByte(U u) {
+            public Result<Byte> getByte(U u) {
                 return Ops.this.getByte(reverseMapper.apply(u));
             }
             @Override
-            public short getShort(U u) {
+            public Result<Short> getShort(U u) {
                 return Ops.this.getShort(reverseMapper.apply(u));
             }
             @Override
-            public int getInt(U u) {
+            public Result<Integer> getInt(U u) {
                 return Ops.this.getInt(reverseMapper.apply(u));
             }
             @Override
-            public long getLong(U u) {
+            public Result<Long> getLong(U u) {
                 return Ops.this.getLong(reverseMapper.apply(u));
             }
             @Override
-            public float getFloat(U u) {
+            public Result<Float> getFloat(U u) {
                 return Ops.this.getFloat(reverseMapper.apply(u));
             }
             @Override
-            public double getDouble(U u) {
+            public Result<Double> getDouble(U u) {
                 return Ops.this.getDouble(reverseMapper.apply(u));
             }
             @Override
-            public char getChar(U u) {
+            public Result<Character> getChar(U u) {
                 return Ops.this.getChar(reverseMapper.apply(u));
             }
             @Override
-            public boolean getBool(U u) {
+            public Result<Boolean> getBool(U u) {
                 return Ops.this.getBool(reverseMapper.apply(u));
             }
             @Override
@@ -669,7 +670,7 @@ public interface Ops<T> {
                 return mapper.apply(Ops.this.mergeStream(reverseMapper.apply(stream1), reverseMapper.apply(stream2)));
             }
             @Override
-            public <E> Stream<E> getStream(U u) {
+            public <E> Result<Stream<E>> getStream(U u) {
                 return Ops.this.getStream(reverseMapper.apply(u));
             }
             private List<T> mapList(Collection<? extends U> l) {
@@ -720,11 +721,11 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <E> List<E> getList(U u) {
+            public <E> Result<List<E>> getList(U u) {
                 return Ops.this.getList(reverseMapper.apply(u));
             }
             @Override
-            public int getSize(U u) {
+            public Result<Integer> getSize(U u) {
                 return Ops.this.getSize(reverseMapper.apply(u));
             }
             
@@ -768,7 +769,7 @@ public interface Ops<T> {
                 return null;
             }
             @Override
-            public <K, V> Map<K, V> getMap(U u) {
+            public <K, V> Result<Map<K, V>> getMap(U u) {
                 return Ops.this.getMap(reverseMapper.apply(u));
             }
         };

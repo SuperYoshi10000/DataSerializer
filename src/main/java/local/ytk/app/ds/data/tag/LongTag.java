@@ -20,7 +20,12 @@ public class LongTag extends NumericTag<Long, LongTag> implements LongValue {
     public long getValue() {
         return value;
     }
-
+    
+    @Override
+    public long longValue() {
+        return value; // Avoid casting to double and back
+    }
+    
     @Override
     public double doubleValue() {
         return value;

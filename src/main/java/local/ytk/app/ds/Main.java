@@ -3,6 +3,7 @@ package local.ytk.app.ds;
 import io.netty.buffer.ByteBuf;
 import local.ytk.app.ds.data.save.FileIO;
 import local.ytk.app.ds.data.tag.Tag;
+import local.ytk.app.ds.transform.AbstractDataTransformer;
 import local.ytk.app.ds.transform.DataTransformer;
 import org.apache.commons.lang3.ArrayUtils;
 import tools.jackson.core.JsonEncoding;
@@ -40,6 +41,8 @@ public class Main {
                 throw new RuntimeException(e);
             }
         } else runArgs = args;
+        
+        run(runArgs);
     }
     
     public static void run(String... args) {
@@ -69,7 +72,7 @@ public class Main {
         
         DataFormat<?, ?, ?> dataFormat = DataFormat.get(format);
         JsonNode json = dataFormat.mapper().readTree(new File(from));
-        Tag tag = DataTransformer.JSON_TO_TAG.transform(json);
+        Tag tag = AbstractDataTransformer.JSON_TO_TAG.transform(json);
         if (debug) System.out.println("Read input file");
         FileIO.DEFAULT.serialize(to, tag);
         if (debug) System.out.println("Wrote output file");
@@ -98,7 +101,7 @@ public class Main {
         ByteBuf buf = FileIO.DEFAULT.deserialize(new File(from));
         Tag tag = Tag.deserialize(buf);
         if (debug) System.out.println("Read input file (" + buf.writerIndex() + " bytes)");
-        JsonNode json = DataTransformer.TAG_TO_JSON.transform(tag);
+        JsonNode json = AbstractDataTransformer.TAG_TO_JSON.transform(tag);
         JsonGenerator generator = dataFormat.factory().createGenerator(ObjectWriteContext.empty(), new File(to), JsonEncoding.UTF8);
         dataFormat.mapper().writeTree(generator, json);
         if (debug) System.out.println("Wrote output file");

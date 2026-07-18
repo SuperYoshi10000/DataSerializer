@@ -35,16 +35,16 @@ public abstract class NumericTag<N extends Number, T extends NumericTag<N, T>> e
     }
     
     public byte sign() {
-        return (byte)(byteValue() == 0 ? 0 : byteValue() > 0 ? 1 : -1);
+        return (byte)(doubleValue() == 0 ? 0 : doubleValue() > 0 ? 1 : -1);
     }
     public boolean isPositive() {
-        return byteValue() > 0;
+        return doubleValue() > 0;
     }
     public boolean isNegative() {
-        return byteValue() < 0;
+        return doubleValue() < 0;
     }
     public boolean isZero() {
-        return byteValue() == 0;
+        return doubleValue() == 0;
     }
     public boolean isInteger() {
         return doubleValue() == longValue();

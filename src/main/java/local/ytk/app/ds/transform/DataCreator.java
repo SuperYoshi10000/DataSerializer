@@ -5,7 +5,7 @@ import tools.jackson.databind.node.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public interface DataCreator<T> {
+public interface DataCreator<T> extends DataOperator<T> {
     default T create(Object input) {
         return switch (input) {
             case Boolean b -> createBoolean(b);
@@ -28,7 +28,7 @@ public interface DataCreator<T> {
                     .collect(Collectors.toMap(
                             e -> e.getKey().toString(),
                             e -> create(e.getValue()),
-                            (a, b) -> b,
+                            (a, b) -> merge(a, b),
                             LinkedHashMap::new
                     ))
             );

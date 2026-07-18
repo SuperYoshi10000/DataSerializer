@@ -15,6 +15,11 @@ public abstract class AbstractArrayTag<V, T extends Tag, O, S extends AbstractAr
     }
     
     @Override
+    public String toString() {
+        return toTagString();
+    }
+    
+    @Override
     public String toTagString() {
         return "[:" + toString().substring(1);
     }

@@ -19,7 +19,12 @@ public class FloatTag extends NumericTag<Float, FloatTag> implements FloatValue 
     public float getValue() {
         return value;
     }
-
+    
+    @Override
+    public float floatValue() {
+        return value;
+    }
+    
     @Override
     public double doubleValue() {
         return value;

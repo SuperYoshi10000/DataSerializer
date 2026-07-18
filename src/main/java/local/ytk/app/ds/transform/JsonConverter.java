@@ -1,5 +1,8 @@
 package local.ytk.app.ds.transform;
 
+import local.ytk.app.ds.data.tag.DictionaryTag;
+import local.ytk.app.ds.data.tag.SequenceTag;
+import local.ytk.app.ds.data.tag.Tag;
 import local.ytk.util.Result;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.json.JsonFactory;
@@ -164,7 +167,7 @@ public class JsonConverter implements DataConverter<JsonNode> {
             case ArrayNode n -> n.deepCopy().addAll(second.asArray());
             case NumericNode n -> JsonNodeFactory.instance.numberNode(n.numberValue().doubleValue() + second.asDouble());
             case StringNode n -> JsonNodeFactory.instance.stringNode(n.stringValue() + second.stringValue());
-            case null, default -> first;
+            case null, default -> second;
         };
     }
     
@@ -304,5 +307,15 @@ public class JsonConverter implements DataConverter<JsonNode> {
     @Override
     public Class<JsonNode> getReaderClass() {
         return JsonNode.class;
+    }
+    
+    @Override
+    public boolean isMap(JsonNode input) {
+        return input instanceof ObjectNode;
+    }
+    
+    @Override
+    public boolean isList(JsonNode input) {
+        return input instanceof ArrayNode;
     }
 }

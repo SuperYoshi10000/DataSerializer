@@ -26,8 +26,13 @@ public interface SequenceTag<V, T extends Tag, O, S extends SequenceTag<V, T, O,
     @Override
     default boolean serialize(ByteBuf buffer) {
         buffer.writeByte(getId());
-        buffer.writeInt(size());
+        int sizeIndex = buffer.writerIndex();
+        buffer.writeInt(0);
+        int startIndex = buffer.writerIndex();
         for (V item : this) if (!(item instanceof Tag tag && tag.serialize(buffer))) return false;
+        int endIndex = buffer.writerIndex();
+        int size = endIndex - startIndex;
+        buffer.setInt(sizeIndex, size);
         return true;
     }
     

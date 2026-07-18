@@ -35,25 +35,51 @@ public interface DataOperator<T> {
     }
     
     T merge(T first, T second);
+    
+    // second as return value = replace first with second
+    default T mergeListOrMap(T first, T second) {
+        if (isList(first) && isList(second)) return mergeList(first, second);
+        if (isMap(first) && isMap(second)) return mergeMap(first, second);
+        return second;
+    }
     default T mergeMap(T first, T second) {
-        if (first instanceof Map && second instanceof Map) return merge(first, second);
-        return null;
+        if (isMap(first) && isMap(second)) return merge(first, second);
+        return second;
     }
     default T mergeList(T first, T second) {
-        if (first instanceof List && second instanceof List) return merge(first, second);
-        return null;
+        if (isList(first) && isList(second)) return merge(first, second);
+        return second;
     }
+    
     T addAll(T first, T second);
+    default T addAllListOrMap(T first, T second) {
+        if (isList(first) && isList(second)) return addAllList(first, second);
+        if (isMap(first) && isMap(second)) return addAllMap(first, second);
+        return second;
+    }
     default T addAllMap(T first, T second) {
-        if (first instanceof Map && second instanceof Map) return addAll(first, second);
+        if (isMap(first) && isMap(second)) return addAll(first, second);
         return null;
     }
     default T addAllList(T first, T second) {
-        if (first instanceof List && second instanceof List) return addAll(first, second);
+        if (isList(first) && isList(second)) return addAll(first, second);
         return null;
     }
     
     T copy(T input);
     
     Class<T> getOperatorClass();
+    
+    default boolean isList(T input) {
+        return input instanceof List || input.getClass().isArray();
+    }
+    default boolean isMap(T input) {
+        return input instanceof Map;
+    }
+    default <U extends T> U cast(T input) {
+        return (U) input;
+    }
+    default <U extends T> U cast(T input, Class<U> cls) {
+        return input != null && cls.isAssignableFrom(input.getClass()) ? cls.cast(input) : null;
+    }
 }

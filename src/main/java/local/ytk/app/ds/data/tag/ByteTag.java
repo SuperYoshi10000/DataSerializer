@@ -18,7 +18,12 @@ public class ByteTag extends NumericTag<Byte, ByteTag> implements ByteValue {
     public boolean getBooleanValue() {
         return value != 0;
     }
-
+    
+    @Override
+    public byte byteValue() {
+        return value;
+    }
+    
     @Override
     public double doubleValue() {
         return value;

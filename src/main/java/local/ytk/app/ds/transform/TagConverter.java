@@ -1,11 +1,11 @@
 package local.ytk.app.ds.transform;
 
-import local.ytk.app.ds.data.tag.MapTag;
-import local.ytk.app.ds.data.tag.Tag;
+import local.ytk.app.ds.data.tag.*;
 import local.ytk.app.ds.entry.ListEntry;
 import local.ytk.app.ds.entry.MapEntry;
 import local.ytk.util.Result;
 import local.ytk.app.ds.val.DataValue;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -72,42 +72,50 @@ public class TagConverter implements DataConverter<Tag> {
     
     @Override
     public Tag merge(Tag first, Tag second) {
-        return null;
+        return mergeListOrMap(first, second);
     }
     
     @Override
     public Tag mergeMap(Tag first, Tag second) {
-        return DataConverter.super.mergeMap(first, second);
+        return first instanceof ObjectTag<?, ?> o ? addAllMap(o.copy(), second) : null;
     }
     
     @Override
     public Tag mergeList(Tag first, Tag second) {
-        return DataConverter.super.mergeList(first, second);
+        return first instanceof ObjectTag<?, ?> o ? addAllList(o.copy(), second) : null;
     }
     
     @Override
     public Tag addAll(Tag first, Tag second) {
-        return null;
+        return addAllListOrMap(first, second);
     }
     
     @Override
     public Tag addAllMap(Tag first, Tag second) {
-        return DataConverter.super.addAllMap(first, second);
+        return first instanceof Map<?, ?> d1 && second instanceof Map<?, ?> d2 && d1.getClass() == d2.getClass() ? (Tag) _addAllMap(d1, d2) : null;
+    }
+    private <K, V> Map<K, V> _addAllMap(Map<K, V> first, Map<?, ?> second) {
+        first.putAll((Map<K, V>) second);
+        return first;
     }
     
     @Override
     public Tag addAllList(Tag first, Tag second) {
-        return DataConverter.super.addAllList(first, second);
+        return first instanceof SequenceTag<?,?,?,?> s1 && second instanceof SequenceTag<?,?,?,?> s2 ? (Tag) _addAllList(s1, s2) : null;
+    }
+    private <T> List<T> _addAllList(List<T> first, List<?> second) {
+        first.addAll((List<T>) second);
+        return first;
     }
     
     @Override
     public Tag copy(Tag input) {
-        return null;
+        return input instanceof Cloneable ? ObjectUtils.clone(input) : input;
     }
     
     @Override
     public Class<Tag> getOperatorClass() {
-        return null;
+        return Tag.class;
     }
     
     @Override
@@ -117,132 +125,136 @@ public class TagConverter implements DataConverter<Tag> {
     
     @Override
     public Tag createBoolean(boolean input) {
-        return null;
+        return BooleanTag.of(input);
     }
     
     @Override
     public Tag createByte(byte input) {
-        return null;
+        return ByteTag.of(input);
     }
     
     @Override
     public Tag createShort(short input) {
-        return null;
+        return ShortTag.of(input);
     }
     
     @Override
     public Tag createInt(int input) {
-        return null;
+        return IntTag.of(input);
     }
     
     @Override
     public Tag createLong(long input) {
-        return null;
+        return LongTag.of(input);
     }
     
     @Override
     public Tag createFloat(float input) {
-        return null;
+        return FloatTag.of(input);
     }
     
     @Override
     public Tag createDouble(double input) {
-        return null;
+        return DoubleTag.of(input);
     }
     
     @Override
     public Tag createChar(char input) {
-        return null;
+        return CharTag.of(input);
     }
     
     @Override
     public Tag createNumber(Number input) {
-        return null;
+        return DoubleTag.of(input);
     }
     
     @Override
     public Tag createString(String input) {
-        return null;
+        return new StringTag(input);
     }
     
     @Override
     public Tag createList(List<? extends Tag> input) {
-        return null;
-    }
+        ListTag tag = new ListTag();
+        tag.addAll(input);
+        return tag;    }
     
     @Override
     public Tag createMap(Map<String, ? extends Tag> input) {
-        return null;
+        CompoundTag tag = new CompoundTag();
+        tag.putAll(input);
+        return tag;
     }
     
     @Override
     public Tag createNull() {
-        return null;
+        return Tag.Null.INSTANCE;
     }
     
     @Override
     public Tag createEnd() {
-        return null;
+        return Tag.End.INSTANCE;
     }
     
     @Override
     public Tag createEmpty() {
-        return null;
+        return Tag.Null.INSTANCE;
     }
     
     @Override
     public Tag createEmptyList() {
-        return null;
+        return new ListTag();
     }
     
     @Override
     public Tag createEmptyMap() {
-        return null;
+        return new CompoundTag();
     }
     
     @Override
     public Class<Tag> getCreatorClass() {
-        return null;
+        return Tag.class;
     }
     
     @Override
     public Result<Object> read(Tag input) {
-        return null;
+        return Result.success(input.objectValue());
     }
     
     @Override
     public Result<Boolean> readBoolean(Tag input) {
-        return null;
+        return input instanceof BooleanTag b ? Result.success(b.getBoolean()) : input instanceof NumericTag<?, ?> n ? Result.success(!n.isZero()) :
+                input instanceof StringTag(String value) ? Result.success(!value.isEmpty()) : Result.failure();
     }
     
     @Override
     public Result<Byte> readByte(Tag input) {
-        return null;
+        return readNumber(input).map(Number::byteValue);
     }
     
     @Override
     public Result<Short> readShort(Tag input) {
-        return null;
+        return readNumber(input).map(Number::shortValue);
     }
     
     @Override
     public Result<Integer> readInt(Tag input) {
-        return null;
+        return readNumber(input).map(Number::intValue);
     }
     
     @Override
     public Result<Long> readLong(Tag input) {
-        return null;
+        return readNumber(input).map(Number::longValue);
     }
     
     @Override
     public Result<Float> readFloat(Tag input) {
-        return null;
+        return readNumber(input).map(Number::floatValue);
     }
     
     @Override
     public Result<Double> readDouble(Tag input) {
-        return null;
+        return readNumber(input).map(Number::doubleValue);
     }
     
     @Override
@@ -252,26 +264,36 @@ public class TagConverter implements DataConverter<Tag> {
     
     @Override
     public Result<Number> readNumber(Tag input) {
-        return null;
+        return input instanceof NumericTag<?,?> n ? Result.success(n) : Result.failure();
     }
     
     @Override
     public Result<String> readString(Tag input) {
-        return null;
+        return Result.success(input.toString());
     }
     
     @Override
     public Result<List<Tag>> readList(Tag input) {
-        return null;
+        return input instanceof SequenceTag<?,?,?,?> s ? Result.success((List<Tag>) s.toTagList()) : Result.failure();
     }
     
     @Override
     public Result<Map<String, Tag>> readMap(Tag input) {
-        return null;
+        return input instanceof MapTag<?, ?> m ? Result.success((MapTag<Tag, ?>) m) : Result.failure();
     }
     
     @Override
     public Class<Tag> getReaderClass() {
-        return null;
+        return Tag.class;
+    }
+    
+    @Override
+    public boolean isMap(Tag input) {
+        return input instanceof DictionaryTag;
+    }
+    
+    @Override
+    public boolean isList(Tag input) {
+        return input instanceof SequenceTag;
     }
 }

@@ -19,7 +19,12 @@ public class ShortTag extends NumericTag<Short, ShortTag> implements ShortValue 
     public short getValue() {
         return value;
     }
-
+    
+    @Override
+    public short shortValue() {
+        return value;
+    }
+    
     @Override
     public double doubleValue() {
         return value;

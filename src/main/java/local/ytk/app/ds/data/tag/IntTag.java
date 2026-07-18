@@ -19,7 +19,12 @@ public class IntTag extends NumericTag<Integer, IntTag> implements IntValue {
     public int getValue() {
         return value;
     }
-
+    
+    @Override
+    public int intValue() {
+        return value;
+    }
+    
     @Override
     public double doubleValue() {
         return value;

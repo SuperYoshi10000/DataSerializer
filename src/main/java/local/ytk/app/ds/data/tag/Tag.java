@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import io.netty.buffer.ByteBuf;
 import local.ytk.app.ds.data.codecs.HasOps;
-import local.ytk.app.ds.data.save.KnownSizeSerializable;
+import local.ytk.app.ds.data.save.Serializable;
 import local.ytk.util.annotation.Singleton;
 
 import java.nio.charset.StandardCharsets;
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 import static local.ytk.app.ds.data.save.Serializer.checkReadable;
 
-public interface Tag extends KnownSizeSerializable, TagLike, HasOps<Tag, TagOps> {
+public interface Tag extends Serializable, TagLike, HasOps<Tag, TagOps> {
     byte NULL = 0;
     byte BYTE = 1;
     byte SHORT = 2;

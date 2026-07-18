@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public interface DataTransformer<T, R> {
-    DataTransformer<JsonNode, Tag> JSON_TO_TAG = DataTransformer.create(JsonConverter.INSTANCE, TagConverter.INSTANCE);
-    DataTransformer<Tag, JsonNode> TAG_TO_JSON = DataTransformer.create(TagConverter.INSTANCE, JsonConverter.INSTANCE);
     
     DataReader<T> reader();
     DataCreator<R> creator();
@@ -22,7 +20,7 @@ public interface DataTransformer<T, R> {
             case Character _ -> transformChar(input);
             case String _ -> transformString(input);
             case null -> creator().createNull();
-            default -> null;
+            default -> creator().create(reader().read(input).get());
         };
     }
     

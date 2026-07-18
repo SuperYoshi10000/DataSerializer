@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'local.ytk.app.ds'
-version = '0.2.0'
+version = '0.2.1'
 
 repositories {
     mavenCentral()
@@ -65,6 +65,17 @@ test {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+jar {
+    manifest {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        attributes(
+                'Main-Class': 'local.ytk.app.ds.Main'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 

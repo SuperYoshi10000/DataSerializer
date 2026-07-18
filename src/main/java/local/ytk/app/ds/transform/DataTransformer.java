@@ -1,11 +1,17 @@
 package local.ytk.app.ds.transform;
 
+import local.ytk.app.ds.data.tag.Tag;
+import tools.jackson.databind.JsonNode;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public interface DataTransformer<T, R> {
+    DataTransformer<JsonNode, Tag> JSON_TO_TAG = DataTransformer.create(JsonConverter.INSTANCE, TagConverter.INSTANCE);
+    DataTransformer<Tag, JsonNode> TAG_TO_JSON = DataTransformer.create(TagConverter.INSTANCE, JsonConverter.INSTANCE);
+    
     DataReader<T> reader();
     DataCreator<R> creator();
     

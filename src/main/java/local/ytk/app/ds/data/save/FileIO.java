@@ -11,6 +11,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.FileSystems;
 
 public class FileIO implements IOSerializer.Named<File> {
+    public static final FileIO DEFAULT = new FileIO();
+    
     @Override
     public ByteBuf deserialize(File file) {
         try (FileInputStream fis = new FileInputStream(file)) {

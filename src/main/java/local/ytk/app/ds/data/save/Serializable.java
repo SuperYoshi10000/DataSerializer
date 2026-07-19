@@ -8,6 +8,6 @@ public interface Serializable extends ByteBufConvertible {
     
     @Override
     default ByteBuf asByteBuf() {
-        return Serializer.serializeToBuffer(this);
+        return Serializer.serializeToBufferDefault(this);
     }
 }

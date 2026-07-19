@@ -51,8 +51,10 @@ public class TagType<V, T extends Tag, A extends SequenceTag<V, T, ?, A>> {
         entry((byte) 0x1A, CompoundListTag.class),
         
         entry((byte) 0x1D, WrapperTag.class),
-        entry((byte) 0x1E   , WrapperTag.TypeDefined.class),
+        entry((byte) 0x1E, WrapperTag.TypeDefined.class),
 
+        // 80 reserved to avoid confusion with compressed format magic number
+        
         entry((byte) 0xFF, Tag.End.class)
     ));
     

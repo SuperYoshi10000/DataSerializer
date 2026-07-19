@@ -1,12 +1,13 @@
 package local.ytk.app.ds;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import local.ytk.app.ds.data.save.FileIO;
+import local.ytk.app.ds.data.save.Serializer;
 import local.ytk.app.ds.data.tag.Tag;
 import local.ytk.app.ds.transform.AbstractDataTransformer;
 import org.apache.commons.cli.*;
 import org.apache.commons.cli.help.HelpFormatter;
-import org.apache.commons.lang3.ArrayUtils;
 import tools.jackson.core.JsonEncoding;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.core.ObjectWriteContext;
@@ -16,13 +17,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import static org.apache.commons.lang3.ArrayUtils.get;
 
 public class Main {
-    public static final String FILE_EXTENSION = ".";
+    public static final String FILE_EXTENSION_TEXT = ".ysfs";
+    public static final String FILE_EXTENSION_BINARY = ".ysfb";
+    public static final String FILE_EXTENSION_COMPRESSED = ".ysfc";
     
     public static final int UNKNOWN_COMMAND = 1;
     public static final int MISSING_ARGUMENT = 2;
@@ -32,6 +39,9 @@ public class Main {
             .addOption("d", "debug", false, "Log additional debug information")
             .addOption("f", "format", true, "Specify the input/output format")
             .addOption("h", "help", false, "Show this help message");
+    
+    public static final int MAGIC_NUMBER = 0x8059544B;
+    public static final int VERSION = 1;
     
     public static void main(String... args) {
         if (args.length < 1) {
@@ -73,17 +83,15 @@ public class Main {
     
     public static void serialize(CommandLine cmd) {
         boolean debug = cmd.hasOption("d");
-        String format = cmd.getOptionValue("f");
+        boolean compress = cmd.hasOption("c");
         List<String> args = cmd.getArgList();
         String from = args.get(1);
-        String to = args.get(2);
-        
         if (from == null) {
             System.err.println("Missing input filename");
             System.exit(MISSING_ARGUMENT);
         }
-        if (format == null) format = from.replaceFirst("^.*\\.", ""); // File extension of input file
-        if (to == null) to = from.replaceFirst("\\.\\S+$", FILE_EXTENSION);
+        String to = Objects.requireNonNullElse(args.get(2), from.replaceFirst("\\.\\S+$", compress ? FILE_EXTENSION_COMPRESSED : FILE_EXTENSION_BINARY));
+        String format = Objects.requireNonNullElse(cmd.getOptionValue("f"), from.replaceFirst("^.*\\.", ""));
         
         if (debug) System.out.println("From: " + from + ", To: " + to + ", Format: " + format);
         
@@ -91,12 +99,34 @@ public class Main {
         JsonNode json = dataFormat.mapper().readTree(new File(from));
         Tag tag = AbstractDataTransformer.JSON_TO_TAG.transform(json);
         if (debug) System.out.println("Read input file");
-        FileIO.DEFAULT.<Tag>onInit((b, t) -> {
+        
+        
+        Serializer<File, Tag> serializer = FileIO.DEFAULT.<Tag>before((b, t) -> {
             b.writeByte(t.getId());
             t.serialize(b);
-        }).serialize(to, tag);
+        }).after((buf, t) -> {
+            if (!compress) return buf;
+            return compressSerialized(buf);
+        });
+        Serializer.serialize(serializer, to, tag);
         if (debug) System.out.println("Wrote output file");
     }
+    public static ByteBuf compressSerialized(ByteBuf buf) {
+        ByteBuf output = Unpooled.buffer();
+        output.writeInt(MAGIC_NUMBER);
+        output.writeInt(VERSION);
+        try (Deflater deflater = new Deflater()) {
+            deflater.setInput(buf.nioBuffer());
+            deflater.finish();
+            while (!deflater.finished()) {
+                byte[] bytes = new byte[256];
+                int written = deflater.deflate(bytes);
+                output.writeBytes(bytes, 0, written);
+            }
+            return output;
+        }
+    }
+    
     public static void deserialize(CommandLine cmd) {
         boolean debug = cmd.hasOption("d");
         String format = cmd.getOptionValue("f");
@@ -114,18 +144,40 @@ public class Main {
                 System.exit(MISSING_ARGUMENT);
             }
             format = to.replaceFirst("^.*\\.", ""); // File extension of output file
-        } else if (to == null) to = from.replaceFirst("\\.\\S+$", FILE_EXTENSION);
+        } else if (to == null) to = from.replaceFirst("\\.\\S+$", format);
         
         if (debug) System.out.println("From: " + from + ", To: " + to + ", Format: " + format);
         
         DataFormat<?, ?, ?> dataFormat = DataFormat.get(format);
-        ByteBuf buf = FileIO.DEFAULT.deserialize(new File(from));
+        ByteBuf fileBuf = FileIO.DEFAULT.deserialize(new File(from));
+        
+        ByteBuf buf;
+        
+        if (fileBuf.getInt(0) == MAGIC_NUMBER) buf = decompressSerialized(fileBuf);
+        else buf = fileBuf;
+        
         Tag tag = Tag.deserialize(buf);
         if (debug) System.out.println("Read input file (" + buf.writerIndex() + " bytes)");
         JsonNode json = AbstractDataTransformer.TAG_TO_JSON.transform(tag);
         JsonGenerator generator = dataFormat.factory().createGenerator(ObjectWriteContext.empty(), new File(to), JsonEncoding.UTF8);
         dataFormat.mapper().writeTree(generator, json);
         if (debug) System.out.println("Wrote output file");
+    }
+    public static ByteBuf decompressSerialized(ByteBuf buf) {
+        buf.readInt();
+        if (buf.readInt() > VERSION) throw new IllegalStateException("Invalid version " + buf.getInt(4) + " (Max supported " + VERSION + ")");
+        ByteBuf output = Unpooled.buffer();
+        try (Inflater inflater = new Inflater()) {
+            inflater.setInput(buf.nioBuffer());
+            while (!inflater.finished()) {
+                byte[] bytes = new byte[256];
+                int written = inflater.inflate(bytes);
+                output.writeBytes(bytes, 0, written);
+            }
+            return output;
+        } catch (DataFormatException e) {
+            throw new RuntimeException("Failed after " + output.writerIndex() + " bytes", e);
+        }
     }
     
     public static void convert(CommandLine cmd) {

@@ -2,10 +2,10 @@ package local.ytk.app.ds;
 
 import io.netty.buffer.ByteBuf;
 import local.ytk.app.ds.data.save.FileIO;
-import local.ytk.app.ds.data.save.Serializable;
 import local.ytk.app.ds.data.tag.Tag;
 import local.ytk.app.ds.transform.AbstractDataTransformer;
-import local.ytk.app.ds.transform.DataTransformer;
+import org.apache.commons.cli.*;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.lang3.ArrayUtils;
 import tools.jackson.core.JsonEncoding;
 import tools.jackson.core.JsonGenerator;
@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Objects;
 
 import static org.apache.commons.lang3.ArrayUtils.get;
@@ -26,9 +27,15 @@ public class Main {
     public static final int UNKNOWN_COMMAND = 1;
     public static final int MISSING_ARGUMENT = 2;
     
+    public static final Options CLI_OPTIONS = new Options()
+            .addOption("c", "compress", false, "Use compression when serializing")
+            .addOption("d", "debug", false, "Log additional debug information")
+            .addOption("f", "format", true, "Specify the input/output format")
+            .addOption("h", "help", false, "Show this help message");
+    
     public static void main(String... args) {
         if (args.length < 1) {
-            help();
+            basicHelp();
             return;
         }
         
@@ -43,24 +50,33 @@ public class Main {
             }
         } else runArgs = args;
         
-        run(runArgs);
+        
+        CommandLineParser parser = new DefaultParser(false);
+        try {
+            CommandLine cmd = parser.parse(CLI_OPTIONS, runArgs);
+            run(cmd);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        
     }
     
-    public static void run(String... args) {
-        switch (args[0]) {
-            case "help" -> help();
-            case "serialize" -> serialize(args);
-            case "deserialize" -> deserialize(args);
-            case "convert" -> convert(args);
-            default -> unknown(args[0]);
+    public static void run(CommandLine cmd) {
+        switch (cmd.getArgList().getFirst()) {
+            case "help" -> help(cmd);
+            case "serialize" -> serialize(cmd);
+            case "deserialize" -> deserialize(cmd);
+            case "convert" -> convert(cmd);
+            default -> unknown(cmd.getArgList().getFirst());
         }
     }
     
-    public static void serialize(String... args) {
-        boolean debug = ArrayUtils.contains(args, "-d");
-        String format = Objects.equals(get(args, 1), "-f") ? get(args, 2) : null;
-        String from = format == null ? get(args, 1) : get(args, 3);
-        String to = format == null ? get(args, 2) : get(args, 4);
+    public static void serialize(CommandLine cmd) {
+        boolean debug = cmd.hasOption("d");
+        String format = cmd.getOptionValue("f");
+        List<String> args = cmd.getArgList();
+        String from = args.get(1);
+        String to = args.get(2);
         
         if (from == null) {
             System.err.println("Missing input filename");
@@ -81,11 +97,12 @@ public class Main {
         }).serialize(to, tag);
         if (debug) System.out.println("Wrote output file");
     }
-    public static void deserialize(String... args) {
-        boolean debug = ArrayUtils.contains(args, "-d");
-        String format = Objects.equals(get(args, 1), "-f") ? get(args, 2) : null;
-        String from = format == null ? get(args, 1) : get(args, 3);
-        String to = format == null ? get(args, 2) : get(args, 4);
+    public static void deserialize(CommandLine cmd) {
+        boolean debug = cmd.hasOption("d");
+        String format = cmd.getOptionValue("f");
+        List<String> args = cmd.getArgList();
+        String from = args.get(1);
+        String to = args.get(2);
         
         if (from == null) {
             System.err.println("Missing input filename");
@@ -111,12 +128,14 @@ public class Main {
         if (debug) System.out.println("Wrote output file");
     }
     
-    public static void convert(String... args) {
-        boolean debug = ArrayUtils.contains(args, "-d");
-        String format1 = get(args, 1);
-        String format2 = get(args, 2);
-        String from = get(args, 3);
-        String to = get(args, 4);
+    public static void convert(CommandLine cmd) {
+        boolean debug = cmd.hasOption("d");
+        
+        List<String> args = cmd.getArgList();
+        String format1 = args.get(1);
+        String format2 = args.get(2);
+        String from = args.get(3);
+        String to = args.get(4);
         
         if (from == null) {
             System.err.println("Missing formats or input filename");
@@ -133,7 +152,7 @@ public class Main {
         if (debug) System.out.println("Wrote output file");
     }
     
-    public static void help() {
+    public static void basicHelp() {
         System.out.println("""
                 \u001b[1mData Serialization\u001b[0m
                 help
@@ -146,6 +165,21 @@ public class Main {
                     Convert a file from <format1> to <format2>
                 """);
     }
+    public static void help(CommandLine cmd) {
+        HelpFormatter formatter = HelpFormatter.builder().get();
+        try {
+            formatter.printHelp(
+                    "DataSerializer [options] <command> [<args>]",
+                    "\u001b[1mData Serialization\u001b[0m",
+                    CLI_OPTIONS,
+                    null,
+                    false
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     public static void unknown(String msg) {
         System.out.printf("Unknown command: %s\nUse 'help' for help.\n", msg);
         System.exit(UNKNOWN_COMMAND);

@@ -223,12 +223,12 @@ public class TagConverter implements DataConverter<Tag> {
         return switch (input) {
             case DictionaryTag<?, ?, ?> m -> Result.success(m.entrySet().stream().collect(Collectors.toMap(
                     Map.Entry::getKey,
-                    e -> read(e.getValue()),
+                    e -> read(e.getValue()).orElse(null),
                     (a, b) -> b,
                     LinkedHashMap::new
             )));
-            case AbstractListTag<?, ?> m -> Result.success(m.stream().map(this::read).toList());
-            default -> Result.success(input);
+            case AbstractListTag<?, ?> m -> Result.success(m.stream().map(this::read).map(Result::get).toList());
+            default -> Result.success(input.objectValue());
         };
     }
     

@@ -17,14 +17,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-
-import static org.apache.commons.lang3.ArrayUtils.get;
 
 public class Main {
     public static final String FILE_EXTENSION_TEXT = ".ysfs";
@@ -45,7 +42,17 @@ public class Main {
     
     public static void main(String... args) {
         if (args.length < 1) {
-            basicHelp();
+            System.out.println("""
+                    \u001b[1mData Serialization\u001b[0m
+                    help
+                        Show this help message
+                    serialize [-f <format>] <from> [<to>]
+                        Serialize a file
+                    deserialize [-f <format>] <from> [<to>]
+                        Deserialize a file
+                    convert <format1> <format2> <from> [<to>]
+                        Convert a file from <format1> to <format2>
+                    """);
             return;
         }
         
@@ -72,8 +79,9 @@ public class Main {
     }
     
     public static void run(CommandLine cmd) {
-        switch (cmd.getArgList().getFirst()) {
-            case "help" -> help(cmd);
+        if (cmd.hasOption("h")) help();
+        else switch (cmd.getArgList().getFirst()) {
+            case "help" -> help();
             case "serialize" -> serialize(cmd);
             case "deserialize" -> deserialize(cmd);
             case "convert" -> convert(cmd);
@@ -204,7 +212,7 @@ public class Main {
         if (debug) System.out.println("Wrote output file");
     }
     
-    public static void basicHelp() {
+    public static void help() {
         System.out.println("""
                 \u001b[1mData Serialization\u001b[0m
                 help
@@ -216,8 +224,7 @@ public class Main {
                 convert <format1> <format2> <from> [<to>]
                     Convert a file from <format1> to <format2>
                 """);
-    }
-    public static void help(CommandLine cmd) {
+        
         HelpFormatter formatter = HelpFormatter.builder().get();
         try {
             formatter.printHelp(
